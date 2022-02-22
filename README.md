@@ -1,70 +1,35 @@
-# Getting Started with Create React App
+<h1 align="center">CMD</h1></br>
+<p align="center">
+   
+  <a href="https://android-arsenal.com/api?level=21"><img alt="API" src="https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat"/></a>
+</p>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
+This is The Web repository for CMD project.
 
-## Available Scripts
+## Contributing
+- Fork the project.
+- Clone your own forked repository, run `git clone "https://github.com/[your_github_username]/cmd_web_app.git"`
 
-In the project directory, you can run:
+Add remote upstream using the command `git remote add upstream "https://github.com/thecmdteam/cmd_web_app.git"`
 
-### `npm start`
+- run: `git fetch upstream` - You must fetch from develop before or after checkout<br/>
+- run: `git merge upstream/develop` - Merge updates from upstream<br/>
+- `git checkout -b feat/user-login` - You are in the feat/user-login branch now<br/>
+To push to github;<br/>
+- `git add .`<br/>
+- `git commit -m "feat: implemented user login"`<br/>
+- `git push origin feat/user-login` - note how it ends with a branch. <br/>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Commit Message Format: `chore`, `feature`, `bug`
+For a feature: `git commit -m "feat: implemented user log-in"`<br/>
+For a bug: `git commit -m "bug: fixed inconsistency in log in screen"`<br/>
+For a chore: `git commit -m "chore: updated read me to include API endpoints"`<br/>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Create your PR to the `develop` branch of this repository.
+### When making a PR, your PR is expected to have the following comments:<br/>
+- What is the task completed ?<br/>
+- What the PR actually does  ?<br/>
+- How can this PR be manually tested ?<br/>
+- Any background contexts ? (maybe something a tester might not notice and be useful for testing)
+- Screenshots (of your implementation - a web page, a mobile app screen or an API payload
