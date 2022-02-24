@@ -1,17 +1,44 @@
-import React from "react";
+import React, { useEffect } from "react";
 import FacebookIcon from "../assets/FacebookIcon";
 import GithubIcon from "../assets/GithubIcon";
-import GoogleIcon from '../assets/GoogleIcon'
+import GoogleIcon from "../assets/GoogleIcon";
+import { useLocation } from "react-router-dom";
+import generateCodeVerifier from "../data/verifier";
+
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 const Login = () => {
+  const query = useQuery();
+  const data = JSON.parse(localStorage.getItem("code"))
+  const codes = data == null ? generateCodeVerifier() : data
+  useEffect(() => {
+    if (query) {
+      console.log(query.get("code"));
+    }
+    
+    console.log(codes.codeVerifier)
+    console.log("code-challenge: ", codes.codeChallenge)
+    console.log(codes.codeChallengeBase64Url)
+  }, []);
+
+  const saveCodes = (data) => {
+    localStorage.setItem("code", JSON.stringify(data))
+  }
+
   return (
     <div className="flex items-center justify-center w-full h-screen bg-gray-100">
       <div className="shadow-md rounded-lg w-[500px] flex flex-col bg-white gap-2 font-bold p-2">
-          <h4 className="text-2xl py-2">Welcome</h4>
+        <h4 className="text-2xl py-2">Welcome</h4>
         <a
           className="py-2 w-full shadom-md decoration-none text-white text-center text-ms font-extrabold rounded-md bg-brandyellow"
-          href="https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=web-client&scope=openid&redirect_uri=https:"
-          
+          href={`https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=${codes.codeChallengeBase64Url}&redirect_uri=https://cmd-app.netlify.app/login`}
+          onClick={(e) => {
+            saveCodes(codes)
+          }}
         >
           Sign in
         </a>
@@ -22,15 +49,18 @@ const Login = () => {
           Sign up
         </a>
         <div className="flex gap-[3px] items-center justify-center">
-            <div className="flex-1 h-[2px] bg-gray-400"></div>
-            <p className="text-md text-gray-400">Or</p>
-            <div className="flex-1 h-[2px] bg-gray-500"></div>
+          <div className="flex-1 h-[2px] bg-gray-400"></div>
+          <p className="text-md text-gray-400">Or</p>
+          <div className="flex-1 h-[2px] bg-gray-500"></div>
         </div>
         <div className="flex items-center justify-center gap-2">
-            <GoogleIcon />
-            <FacebookIcon />
-            <GithubIcon />
+          <GoogleIcon />
+          <FacebookIcon />
+          <GithubIcon />
         </div>
+      </div>
+      <div className="z-[100] absolute top-0 left-0 w-full h-screen flex items-center justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
+          <div className="loading"></div>
       </div>
     </div>
   );
