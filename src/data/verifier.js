@@ -7,7 +7,6 @@ function getRandomString(length) {
   for ( var i = 0; i < length; i++ ) {
       result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
   }
-  console.log(Math.random())
   return result;
 }
 

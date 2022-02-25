@@ -4,6 +4,8 @@ import GithubIcon from "../assets/GithubIcon";
 import GoogleIcon from "../assets/GoogleIcon";
 import { useLocation } from "react-router-dom";
 import generateCodeVerifier from "../data/verifier";
+import { useSelector, useDispatch } from 'react-redux'
+import { loginUser } from "../data/user-slice";
 
 function useQuery() {
   const { search } = useLocation();
@@ -15,14 +17,16 @@ const Login = () => {
   const query = useQuery();
   const data = JSON.parse(localStorage.getItem("code"))
   const codes = data == null ? generateCodeVerifier() : data
+  const state = useSelector(state => state.user);
+  const dispatch = useDispatch()
+
   useEffect(() => {
-    if (query) {
-      console.log(query.get("code"));
+    if (query.get("code")) {
+      dispatch(loginUser({
+        authCode: query.get("code"),
+        codeVerifier: codes.codeVerifier
+      }))
     }
-    
-    console.log(codes.codeVerifier)
-    console.log("code-challenge: ", codes.codeChallenge)
-    console.log(codes.codeChallengeBase64Url)
   }, []);
 
   const saveCodes = (data) => {
@@ -35,7 +39,7 @@ const Login = () => {
         <h4 className="text-2xl py-2">Welcome</h4>
         <a
           className="py-2 w-full shadom-md decoration-none text-white text-center text-ms font-extrabold rounded-md bg-brandyellow"
-          href={`https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=${codes.codeChallengeBase64Url}&redirect_uri=https://cmd-app.netlify.app/login`}
+          href={`https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=${codes.codeChallengeBase64Url}&code_challenge_method=S256&redirect_uri=https://cmd-app.netlify.app/login`}
           onClick={(e) => {
             saveCodes(codes)
           }}
