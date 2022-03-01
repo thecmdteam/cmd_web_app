@@ -4,10 +4,7 @@ import { Buffer } from "buffer";
 
 export const loginUser = createAsyncThunk(
   "user/loginUser",
-  async (
-    { authCode, codeVerifier },
-    { rejectWithValue, fulfillWithValue, dispatch }
-  ) => {
+  async ({ authCode, codeVerifier }, { rejectWithValue, fulfillWithValue }) => {
     const url = `https://cmd-auth.herokuapp.com/oauth2/token?client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_verifier=${codeVerifier}&code=${authCode}&grant_type=authorization_code&redirect_uri=https://cmd-app.netlify.app/login`;
     const auth = `${process.env.REACT_APP_CMD_CLIENT_ID}:${process.env.REACT_APP_CMD_SECRET}`;
     const encodedAuth = Buffer.from(auth).toString("base64");
@@ -21,13 +18,12 @@ export const loginUser = createAsyncThunk(
       };
 
       const token = await axios(config);
-      localStorage.setItem("token", JSON.stringify(token))
+      localStorage.setItem("token", JSON.stringify(token.data));
 
-      console.log(token);
-      fulfillWithValue(token);
+      return fulfillWithValue(token.data);
     } catch (error) {
       console.log(error);
-      rejectWithValue(error.message);
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -43,15 +39,31 @@ const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state, action) => {})
+      .addCase(loginUser.pending, (state, action) => {
+        if (!state.loading) {
+          state.loading = true;
+          state.error = null;
+          state.data = null;
+          state.currentRequestId = action.meta.requestId;
+        }
+      })
       .addCase(loginUser.fulfilled, (state, action) => {
         const { requestId } = action.meta;
         if (state.loading && state.currentRequestId === requestId) {
+          state.loading = false;
+          state.error = null;
+          console.log(action)
+          state.data = action.payload;
+          state.currentRequestId = action.meta.requestId;
         }
       })
       .addCase(loginUser.rejected, (state, action) => {
         const { requestId } = action.meta;
         if (state.loading && state.currentRequestId === requestId) {
+          state.loading = false;
+          state.error = action.error;
+          state.data = action.payload;
+          state.currentRequestId = action.meta.requestId;
         }
       });
   },

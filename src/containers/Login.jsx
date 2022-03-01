@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import FacebookIcon from "../assets/FacebookIcon";
 import GithubIcon from "../assets/GithubIcon";
 import GoogleIcon from "../assets/GoogleIcon";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../data/user-slice";
 import getKeys from "../data/verifier";
@@ -17,9 +17,17 @@ const Login = () => {
   const query = useQuery();
   const state = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const data = JSON.parse(localStorage.getItem("code"));
   const codes = data ? data : getKeys();
   console.log(codes);
+
+  useEffect(() => {
+    if(state.data) {
+      navigate("/", { replace: true })
+    }
+  }, [state.data])
+
   useEffect(() => {
     const code = query.get("code");
 
@@ -70,7 +78,7 @@ const Login = () => {
           <GithubIcon />
         </div>
       </div>
-      {false && (
+      {state.loading && (
         <div
           className="z-[100] absolute top-0 left-0 w-full h-screen flex items-center justify-center"
           style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
