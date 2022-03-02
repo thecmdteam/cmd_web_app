@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../data/user-slice";
 import getKeys from "../data/verifier";
+import GoogleLogin from "react-google-login";
 
 function useQuery() {
   const { search } = useLocation();
@@ -23,10 +24,10 @@ const Login = () => {
   console.log(codes);
 
   useEffect(() => {
-    if(state.data) {
-      navigate("/", { replace: true })
+    if (state.data) {
+      navigate("/", { replace: true });
     }
-  }, [state.data])
+  }, [state.data]);
 
   useEffect(() => {
     const code = query.get("code");
@@ -46,6 +47,14 @@ const Login = () => {
     console.log(data);
     localStorage.clear();
     localStorage.setItem("code", JSON.stringify(data));
+  };
+
+  const googleSuccessResponse = (response) => {
+    console.log(response);
+  };
+
+  const googleFailureResponse = (error) => {
+    console.log(error);
   };
 
   return (
@@ -73,7 +82,22 @@ const Login = () => {
           <div className="flex-1 h-[2px] bg-gray-500"></div>
         </div>
         <div className="flex items-center justify-center gap-2">
-          <GoogleIcon />
+          <GoogleLogin
+            clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+            render={(renderProps) => (
+              <button
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+                type="button"
+                className="bg-mainColor flex justify-center items-center cursor-pointer outline-none"
+              >
+                <GoogleIcon />
+              </button>
+            )}
+            onSuccess={googleSuccessResponse}
+            onFailure={googleFailureResponse}
+            cookiePolicy="single_host_origin"
+          />
           <FacebookIcon />
           <GithubIcon />
         </div>
