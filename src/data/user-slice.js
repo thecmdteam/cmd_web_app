@@ -28,6 +28,24 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const getGithubAuthToken = createAsyncThunk(
+  "user/getGithubToken",
+  async ({ code }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const url = `https://github.com/login/oauth/access_token?code=${code}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}&redirect_uri=https://cmd-app.netlify.app/validate/github`;
+      const token = await axios({
+        method: "POST",
+        url,
+      });
+      localStorage.clear();
+      localStorage.setItem("github-token", token.data);
+      return fulfillWithValue(token.data);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -41,32 +59,76 @@ const userSlice = createSlice({
     builder
       .addCase(loginUser.pending, (state, action) => {
         if (!state.loading) {
-          state.loading = true;
-          state.error = null;
-          state.data = null;
-          state.currentRequestId = action.meta.requestId;
+          setState(state, "pending", {
+            data: null,
+            error: null,
+            requestId: action.meta.requestId,
+          });
         }
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         const { requestId } = action.meta;
         if (state.loading && state.currentRequestId === requestId) {
-          state.loading = false;
-          state.error = null;
-          console.log(action)
-          state.data = action.payload;
-          state.currentRequestId = action.meta.requestId;
+          setState(state, "success", {
+            data: action.payload,
+            requestId: action.meta.requestId,
+            error: null
+          });
         }
       })
       .addCase(loginUser.rejected, (state, action) => {
         const { requestId } = action.meta;
         if (state.loading && state.currentRequestId === requestId) {
-          state.loading = false;
-          state.error = action.error;
-          state.data = action.payload;
-          state.currentRequestId = action.meta.requestId;
+          setState(state, "success", {
+            data: action.payload,
+            requestId: action.meta.requestId,
+            error: action.error
+          });
         }
-      });
+      })
+      .addCase(getGithubAuthToken.pending, (state, action) => {
+        if (!state.loading) {
+          setState(state, "pending", {
+            data: null,
+            requestId: action.meta.requestId,
+            error: null
+          });
+        }
+      })
+      .addCase(getGithubAuthToken.fulfilled, (state, action) => {
+        if (state.loading) {
+          setState(state, "success", {
+            data: action.payload,
+            requestId: action.meta.requestId,
+            error: null
+          });
+        }
+      })
+      .addCase(getGithubAuthToken.rejected, (state, action) => {
+        if (state.loading) {
+          setState(state, "rejected", {
+            data: action.payload,
+            requestId: action.meta.requestId,
+            error: action.error
+          });
+        }
+      })
   },
 });
+
+const setState = (state, type, { data, requestId, error }) => {
+  switch (type) {
+    case "pending":
+      state.loading = true;
+      state.error = null;
+      state.data = null;
+      state.currentRequestId = requestId;
+    default:
+      state.loading = false;
+      state.error = error;
+      state.data = data;
+      state.currentRequestId = requestId;
+  }
+};
 
 export default userSlice.reducer;

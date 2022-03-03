@@ -8,7 +8,7 @@ const App = () => {
   return (
     <Routes>
       <Route path='/login' element={<Login />} />
-      <Route path='/validate' element={<EmailValidationRedirect />} />
+      <Route path='/validate/:type' element={<EmailValidationRedirect />} />
       <Route path='/*' element={<Home />} />
     </Routes>
   )

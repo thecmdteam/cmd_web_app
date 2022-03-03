@@ -21,6 +21,7 @@ const Login = () => {
   const navigate = useNavigate();
   const data = JSON.parse(localStorage.getItem("code"));
   const codes = data ? data : getKeys();
+  const githubKeys = getKeys();
   console.log(codes);
 
   useEffect(() => {
@@ -99,7 +100,16 @@ const Login = () => {
             cookiePolicy="single_host_origin"
           />
           <FacebookIcon />
-          <GithubIcon />
+          <a
+            className="decoration-none"
+            href={`https://github.com/login/oauth/authorize?&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&scope=user,repo:public_repo&state=${githubKeys.code_challenge}&redirect_uri=https://cmd-app.netlify.app/validate/github}`}
+            onClick={(e) => {
+              localStorage.clear();
+              localStorage.setItem("github-code", githubKeys.code_challenge)
+            }}
+          >
+            <GithubIcon />
+          </a>
         </div>
       </div>
       {state.loading && (
