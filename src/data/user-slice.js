@@ -30,19 +30,19 @@ export const loginUser = createAsyncThunk(
 
 export const getGithubAuthToken = createAsyncThunk(
   "user/getGithubToken",
-  async ({ code }, { rejectWithValue, fulfillWithValue }) => {
+  async (code, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const url = `https://github.com/login/oauth/access_token?code=${code}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}&redirect_uri=https://cmd-app.netlify.app/validate/github`;
-      const token = await axios({
-        method: "POST",
-        url,
-      });
+      const url = `https://cmd-github-service.herokuapp.com/get-auth-token/${code}`;
+      const token = await axios.get(url);
       localStorage.clear();
       localStorage.setItem("github-token", token.data);
+
       return fulfillWithValue(token.data);
     } catch (error) {
       return rejectWithValue(error.message);
     }
+
+    //return rejectWithValue(error.message);
   }
 );
 
@@ -72,7 +72,7 @@ const userSlice = createSlice({
           setState(state, "success", {
             data: action.payload,
             requestId: action.meta.requestId,
-            error: null
+            error: null,
           });
         }
       })
@@ -82,7 +82,7 @@ const userSlice = createSlice({
           setState(state, "success", {
             data: action.payload,
             requestId: action.meta.requestId,
-            error: action.error
+            error: action.error,
           });
         }
       })
@@ -91,28 +91,24 @@ const userSlice = createSlice({
           setState(state, "pending", {
             data: null,
             requestId: action.meta.requestId,
-            error: null
+            error: null,
           });
         }
       })
       .addCase(getGithubAuthToken.fulfilled, (state, action) => {
-        if (state.loading) {
-          setState(state, "success", {
-            data: action.payload,
-            requestId: action.meta.requestId,
-            error: null
-          });
-        }
+        setState(state, "success", {
+          data: action.payload,
+          requestId: action.meta.requestId,
+          error: null,
+        });
       })
       .addCase(getGithubAuthToken.rejected, (state, action) => {
-        if (state.loading) {
-          setState(state, "rejected", {
-            data: action.payload,
-            requestId: action.meta.requestId,
-            error: action.error
-          });
-        }
-      })
+        setState(state, "rejected", {
+          data: action.payload,
+          requestId: action.meta.requestId,
+          error: action.error,
+        });
+      });
   },
 });
 

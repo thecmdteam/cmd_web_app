@@ -83,7 +83,7 @@ const Login = () => {
           <div className="flex-1 h-[2px] bg-gray-500"></div>
         </div>
         <div className="flex items-center justify-center gap-2">
-          <GoogleLogin
+          {/* <GoogleLogin
             clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
             render={(renderProps) => (
               <button
@@ -98,11 +98,11 @@ const Login = () => {
             onSuccess={googleSuccessResponse}
             onFailure={googleFailureResponse}
             cookiePolicy="single_host_origin"
-          />
+          /> */}
           <FacebookIcon />
           <a
             className="decoration-none"
-            href={`https://github.com/login/oauth/authorize?&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&scope=user,repo:public_repo&state=${githubKeys.code_challenge}&redirect_uri=https://cmd-app.netlify.app/validate/github}`}
+            href={`https://cmd-github-service.herokuapp.com/user/get-auth-code/${githubKeys.code_challenge}`}
             onClick={(e) => {
               localStorage.clear();
               localStorage.setItem("github-code", githubKeys.code_challenge)
