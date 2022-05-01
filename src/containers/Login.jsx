@@ -4,7 +4,7 @@ import GithubIcon from "../assets/GithubIcon";
 import GoogleIcon from "../assets/GoogleIcon";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { loginUser } from "../data/user-slice";
+import { loginUser } from "../data/user/UserMethods";
 import getKeys from "../data/verifier";
 import GoogleLogin from "react-google-login";
 
@@ -83,7 +83,7 @@ const Login = () => {
           <div className="flex-1 h-[2px] bg-gray-500"></div>
         </div>
         <div className="flex items-center justify-center gap-2">
-          {/* <GoogleLogin
+          <GoogleLogin
             clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
             render={(renderProps) => (
               <button
@@ -98,7 +98,7 @@ const Login = () => {
             onSuccess={googleSuccessResponse}
             onFailure={googleFailureResponse}
             cookiePolicy="single_host_origin"
-          /> */}
+          />
           <FacebookIcon />
           <a
             className="decoration-none"

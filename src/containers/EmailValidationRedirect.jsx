@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { getGithubAuthToken } from "../data/user-slice";
+import { getGithubAuthToken } from "../data/user/UserMethods";
 import getKeys from "../data/verifier";
 
 function useQuery() {
