@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getGithubAuthToken, loginUser } from "./UserMethods";
 import {
   getGithubAuthTokenFulfilled,
   getGithubAuthTokenPending,
@@ -7,7 +6,11 @@ import {
   loginUserFulfilled,
   loginUserPending,
   loginUserRejected,
-} from "./UserTypes";
+} from "./authentication.types";
+
+import { getGithubAuthToken, loginUser } from './authentication.actions'
+
+const USER_TASK_ID = "user"
 
 const initialState = {
   data: null,
@@ -16,8 +19,8 @@ const initialState = {
   currentRequestId: "",
 };
 
-const userSlice = createSlice({
-  name: "user",
+const authenticationSlice = createSlice({
+  name: USER_TASK_ID,
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -31,4 +34,4 @@ const userSlice = createSlice({
   },
 });
 
-export default userSlice.reducer;
+export default authenticationSlice.reducer;

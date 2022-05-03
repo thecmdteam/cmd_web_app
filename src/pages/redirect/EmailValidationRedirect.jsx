@@ -2,8 +2,9 @@ import React, { useEffect, useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { getGithubAuthToken } from "../data/user/UserMethods";
-import getKeys from "../data/verifier";
+import { LocalStorage } from "../../services";
+import { getGithubAuthToken } from "../../store/authentication/authentication.actions";
+import { useGetPkceChallengeQuery } from "../../store/authentication/authentication.pkce";
 
 function useQuery() {
   const { search } = useLocation();
@@ -17,6 +18,9 @@ const EmailValidationRedirect = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const state = useSelector((state) => state.user);
+
+  const { isLoading, isError, isSuccess } = useGetPkceChallengeQuery();
+
   useEffect(() => {
     if (type == "github") {
       const githubCode = localStorage.getItem("github-code");
@@ -26,11 +30,10 @@ const EmailValidationRedirect = () => {
         console.log("State", code, githubCode, query.get("state"))
         //navigate("/error");
       } else {
-        console.log("first")
         dispatch(getGithubAuthToken(code));
       }
     } else if (type == "cmd") {
-      const codes = getKeys();
+      const codes = null;
       saveCodes(codes);
       setTimeout(() => {
         window.location.href = `https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=${codes.code_challenge}&code_challenge_method=S256&redirect_uri=https://cmd-app.netlify.app/login`;
@@ -43,8 +46,8 @@ const EmailValidationRedirect = () => {
   }, [state])
 
   const saveCodes = (data) => {
-    localStorage.clear();
-    localStorage.setItem("code", JSON.stringify(data));
+    LocalStorage.clear();
+    LocalStorage.set("code", JSON.stringify(data));
   };
 
   return (

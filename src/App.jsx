@@ -1,8 +1,8 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import EmailValidationRedirect from './containers/EmailValidationRedirect'
-import Home from './containers/Home'
-import Login from './containers/Login'
+import EmailValidationRedirect from './pages/redirect/EmailValidationRedirect'
+import Home from './containers/home/Home'
+import Login from './pages/login/Login'
 
 const App = () => {
   return (

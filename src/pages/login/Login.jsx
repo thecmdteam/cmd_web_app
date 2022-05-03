@@ -1,12 +1,12 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import FacebookIcon from "../assets/FacebookIcon";
-import GithubIcon from "../assets/GithubIcon";
-import GoogleIcon from "../assets/GoogleIcon";
+import FacebookIcon from '../../assets/FacebookIcon';
+import GithubIcon from "../../assets/GithubIcon";
+import GoogleIcon from "../../assets/GoogleIcon";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { loginUser } from "../data/user/UserMethods";
-import getKeys from "../data/verifier";
+import { loginUser } from '../../store/authentication/authentication.actions'
 import GoogleLogin from "react-google-login";
+import { LocalStorage } from "../../services";
 
 function useQuery() {
   const { search } = useLocation();
@@ -16,38 +16,38 @@ function useQuery() {
 
 const Login = () => {
   const query = useQuery();
-  const state = useSelector((state) => state.user);
+  const state = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const data = JSON.parse(localStorage.getItem("code"));
-  const codes = data ? data : getKeys();
-  const githubKeys = getKeys();
+  const data = JSON.parse(LocalStorage.get("code"));
+  const codes = data 
+  const githubKeys = null
   console.log(codes);
 
-  useEffect(() => {
-    if (state.data) {
-      navigate("/", { replace: true });
-    }
-  }, [state.data]);
+  // useEffect(() => {
+  //   if (state.data) {
+  //     navigate("/", { replace: true });
+  //   }
+  // }, [state.data]);
 
-  useEffect(() => {
-    const code = query.get("code");
+  // useEffect(() => {
+  //   const code = query.get("code");
 
-    if (code) {
-      dispatch(
-        loginUser({
-          authCode: code,
-          codeVerifier: codes.code_verifier,
-        })
-      );
-      localStorage.clear();
-    }
-  }, []);
+  //   if (code) {
+  //     dispatch(
+  //       loginUser({
+  //         authCode: code,
+  //         codeVerifier: codes.code_verifier,
+  //       })
+  //     );
+  //     localStorage.clear();
+  //   }
+  // }, []);
 
   const saveCodes = (data) => {
     console.log(data);
-    localStorage.clear();
-    localStorage.setItem("code", JSON.stringify(data));
+    LocalStorage.clear();
+    LocalStorage.set("code", JSON.stringify(data));
   };
 
   const googleSuccessResponse = (response) => {
@@ -64,9 +64,9 @@ const Login = () => {
         <h4 className="text-2xl py-2">Welcome</h4>
         <a
           className="py-2 w-full shadom-md decoration-none text-white text-center text-ms font-extrabold rounded-md bg-brandyellow"
-          href={`https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=${codes.code_challenge}&code_challenge_method=S256&redirect_uri=https://cmd-app.netlify.app/login`}
+          href={`https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=$codes.code_challenge&code_challenge_method=S256&redirect_uri=https://cmd-app.netlify.app/login`}
           onClick={(e) => {
-            saveCodes(codes);
+            
           }}
         >
           Sign in
@@ -102,10 +102,10 @@ const Login = () => {
           <FacebookIcon />
           <a
             className="decoration-none"
-            href={`https://cmd-github-service.herokuapp.com/user/get-auth-code/${githubKeys.code_challenge}`}
+            href={`https://cmd-github-service.herokuapp.com/user/get-auth-code/$githubKeys.code_challenge`}
             onClick={(e) => {
-              localStorage.clear();
-              localStorage.setItem("github-code", githubKeys.code_challenge)
+              LocalStorage.clear();
+              LocalStorage.set("github-code", githubKeys.code_challenge)
             }}
           >
             <GithubIcon />
