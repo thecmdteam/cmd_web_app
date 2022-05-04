@@ -22,7 +22,6 @@ const initialState = {
 const authenticationSlice = createSlice({
   name: USER_TASK_ID,
   initialState,
-  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, loginUserPending)

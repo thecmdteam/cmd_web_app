@@ -17,26 +17,23 @@ const EmailValidationRedirect = () => {
   const query = useQuery();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const state = useSelector((state) => state.user);
+  const state = useSelector((state) => state.auth);
 
-  const { isLoading, isError, isSuccess } = useGetPkceChallengeQuery();
+  const { isLoading, isError, isSuccess, data } = useGetPkceChallengeQuery();
 
   useEffect(() => {
     if (type == "github") {
-      const githubCode = localStorage.getItem("github-code");
+      const codes = JSON.parse(LocalStorage.get("codes"));
       const code = query.get("code");
-      console.log("State", code, githubCode, query.get("state"))
-      if (githubCode != query.get("state")) {
-        console.log("State", code, githubCode, query.get("state"))
-        //navigate("/error");
+      if (codes.code_challenge != query.get("state")) {
+        navigate("/error");
       } else {
         dispatch(getGithubAuthToken(code));
       }
     } else if (type == "cmd") {
-      const codes = null;
-      saveCodes(codes);
+      saveCodes(data)
       setTimeout(() => {
-        window.location.href = `https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=${codes.code_challenge}&code_challenge_method=S256&redirect_uri=https://cmd-app.netlify.app/login`;
+        window.location.href = `https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=${data.code_challenge}&code_challenge_method=S256&redirect_uri=https://cmd-app.netlify.app/login`;
       }, 500);
     }
   }, []);

@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from '../../store/authentication/authentication.actions'
 import GoogleLogin from "react-google-login";
 import { LocalStorage } from "../../services";
+import { useGetPkceChallengeQuery } from "../../store/authentication/authentication.pkce";
 
 function useQuery() {
   const { search } = useLocation();
@@ -19,35 +20,32 @@ const Login = () => {
   const state = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const data = JSON.parse(LocalStorage.get("code"));
-  const codes = data 
-  const githubKeys = null
-  console.log(codes);
+  const codes = JSON.parse(LocalStorage.get("codes"));
+  const { isLoading, isSuccess, isError, data, error } = useGetPkceChallengeQuery()
+  console.log(state)
+  
+  useEffect(() => {
+    console.log(codes, state)
+    if (state.data) {
+      navigate("/", { replace: true });
+    }
+  }, [state.data]);
+  
+  useEffect(() => {
+    const code = query.get("code");
+    if (code) {
+      dispatch(
+        loginUser({
+          authCode: code,
+          codeVerifier: codes.code_verifier,
+        })
+      );
+    }
+  }, []);
 
-  // useEffect(() => {
-  //   if (state.data) {
-  //     navigate("/", { replace: true });
-  //   }
-  // }, [state.data]);
-
-  // useEffect(() => {
-  //   const code = query.get("code");
-
-  //   if (code) {
-  //     dispatch(
-  //       loginUser({
-  //         authCode: code,
-  //         codeVerifier: codes.code_verifier,
-  //       })
-  //     );
-  //     localStorage.clear();
-  //   }
-  // }, []);
-
-  const saveCodes = (data) => {
-    console.log(data);
+  const saveCodes = () => {
     LocalStorage.clear();
-    LocalStorage.set("code", JSON.stringify(data));
+    LocalStorage.set("codes", JSON.stringify(data));
   };
 
   const googleSuccessResponse = (response) => {
@@ -64,10 +62,8 @@ const Login = () => {
         <h4 className="text-2xl py-2">Welcome</h4>
         <a
           className="py-2 w-full shadom-md decoration-none text-white text-center text-ms font-extrabold rounded-md bg-brandyellow"
-          href={`https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=$codes.code_challenge&code_challenge_method=S256&redirect_uri=https://cmd-app.netlify.app/login`}
-          onClick={(e) => {
-            
-          }}
+          href={data ? `https://cmd-auth.herokuapp.com/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_CMD_CLIENT_ID}&scope=openid&code_challenge=${data ? data.code_challenge : ""}&code_challenge_method=S256&redirect_uri=https://cmd-app.netlify.app/login`: "#"}
+          onClick={(e) => saveCodes()}
         >
           Sign in
         </a>
@@ -102,23 +98,39 @@ const Login = () => {
           <FacebookIcon />
           <a
             className="decoration-none"
-            href={`https://cmd-github-service.herokuapp.com/user/get-auth-code/$githubKeys.code_challenge`}
-            onClick={(e) => {
-              LocalStorage.clear();
-              LocalStorage.set("github-code", githubKeys.code_challenge)
-            }}
+            href={data ? `https://cmd-github-service.herokuapp.com/user/get-auth-code/${data.code_challenge}`: "#"}
+            onClick={(e) => saveCodes()}
           >
             <GithubIcon />
           </a>
         </div>
       </div>
-      {state.loading && (
+      {(state.loading || isLoading) && (
         <div
           className="z-[100] absolute top-0 left-0 w-full h-screen flex items-center justify-center"
           style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
         >
           <div className="loading"></div>
         </div>
+      )}
+      {isError && (
+        <div
+        className="z-[100] absolute top-0 left-0 w-full h-screen flex items-center justify-center"
+        style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+      >
+        <div className="shadow-md rounded-lg w-[500px] flex flex-col bg-white gap-2 font-bold p-2">
+          <p className="text-md py-2">
+            {error.code} - {error.message}
+          </p>
+        <a
+          className="py-2 w-full shadom-md text-center decoration-none text-ms text-white font-bold rounded-md bg-brandblack"
+          href="https://cmd-auth.herokuapp.com/signup"
+        >
+          Refresh
+        </a>
+        </div>
+        
+      </div>
       )}
     </div>
   );

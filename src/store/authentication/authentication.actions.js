@@ -10,7 +10,7 @@ const getUrl = (url, params) => {
 }
 
 function addParams(params) {
-  let addedParams;
+  let addedParams = "";
   Object.keys(params).forEach((value, index) => {
     addedParams = `${addedParams}&${value}=${params[value]}`
   })
@@ -23,7 +23,7 @@ export const loginUser = createAsyncThunk(
     const params = {
       client_id: `${process.env.REACT_APP_CMD_CLIENT_ID}`,
       scope: OPEN_ID,
-      code_verifier: `${codeVerifier}`,
+      code_verifier: codeVerifier,
       code: `${authCode}`,
       grant_type: GRANT_TYPE,
       redirect_uri: APP_URL
@@ -43,10 +43,11 @@ export const loginUser = createAsyncThunk(
 
       const token = await axios(config);
       LocalStorage.set(TOKEN, JSON.stringify(token.data))
+      console.log(token);
 
       return fulfillWithValue(token.data);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       return rejectWithValue(error.message);
     }
   }
